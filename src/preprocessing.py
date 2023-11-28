@@ -39,8 +39,8 @@ def word_iterator(word):
     """
     output = []
     prev_char = word[0]
-    #idx will start at 0
-    #char we got here is the middle char as we have its prev element and its next element
+    # idx will start at 0
+    # char we got here is the middle char as we have its prev element and its next element
     for idx, char in enumerate(word[1:]):
         try:
             # first 1 because we skipped the first character
@@ -48,74 +48,75 @@ def word_iterator(word):
             next_char = word[idx+1+1]
         except IndexError:  # will happen with the last character only
             next_char = ''
-        #if the char is a diacritic then the prev char is mtshkl
+        # if the char is a diacritic then the prev char is mtshkl
         if char in VOWEL_SYMBOLS:
-            #Here if we have exceeded the limit
-            #Then the prev char is a letter
-            #the current char is a diacritic
-            #Then the end of the line
-            #so add it
+            # Here if we have exceeded the limit
+            # Then the prev char is a letter
+            # the current char is a diacritic
+            # Then the end of the line
+            # so add it
             if next_char == '' and prev_char not in VOWEL_SYMBOLS:
                 output.append((prev_char, char))
-            #Here the prev char isn't a vowel then it's a letter
-            #And the Next char isn't a vowel
-            #then we will append the prev char with the current char
+            # Here the prev char isn't a vowel then it's a letter
+            # And the Next char isn't a vowel
+            # then we will append the prev char with the current char
             elif prev_char not in VOWEL_SYMBOLS and next_char not in VOWEL_SYMBOLS:
                 output.append((prev_char, char))
-            #To Handle if there is Shadda + Fat7a for example
-            #Then prev char isn't a vowel
-            #but the char and the next char are vowels
-            #Then we will append the letter with Shadda+Fat7a
+            # To Handle if there is Shadda + Fat7a for example
+            # Then prev char isn't a vowel
+            # but the char and the next char are vowels
+            # Then we will append the letter with Shadda+Fat7a
             elif prev_char not in VOWEL_SYMBOLS and next_char in VOWEL_SYMBOLS:
                 output.append((prev_char, char+next_char))
         else:
-            #Here we Found a letter Already
-            #Then the prev char doesn't have any diacritic ahead
-            #Then add this char with no diacritic
+            # Here we Found a letter Already
+            # Then the prev char doesn't have any diacritic ahead
+            # Then add this char with no diacritic
             if prev_char not in VOWEL_SYMBOLS:
                 output.append((prev_char, OTHER))
-            #We are in the end of the line
+            # We are in the end of the line
             if next_char == '':
                 output.append((char, OTHER))
         prev_char = char
     return output
 
-#This function is used to get aware of the surrounding letters of the current letter
-#as we can get n letters before this char as they may change the values of diacritic this char can take
-def include_ngram_letters(word,index,pair,n):
-    #Firstly this letters array contains the previous chars in the word
-    letters=[]
-    #But Firstly we need to remove the diacritics themselves from the word
+
+# This function is used to get aware of the surrounding letters of the current letter
+# as we can get n letters before this char as they may change the values of diacritic this char can take
+def include_ngram_letters(word, index, pair, n):
+    # Firstly this letters array contains the previous chars in the word
+    letters = []
+    # But Firstly we need to remove the diacritics themselves from the word
     word = clean_word(word)
-    #Then we should get the position where we should stop at
-    #If the previous n chars are out of the limit of the word then we should stop at letter 0
+    # Then we should get the position where we should stop at
+    # If the previous n chars are out of the limit of the word then we should stop at letter 0
     stoppingIndex = index-n+1
-    #Checking that we should stop at letter 0
-    if(stoppingIndex < 0):
-        stoppingIndex=0
-    #Then looping from the index we are in backward until the stopping index position
-    while(index >= stoppingIndex):
-        letters.insert(0,word[index])
-        index-=1
-    #Then We fill the gaps with * which means that no chars are there
-    while(len(letters)<n):
-        letters.insert(0,'*')
-    return (letters,pair[1])
+    # Checking that we should stop at letter 0
+    if (stoppingIndex < 0):
+        stoppingIndex = 0
+    # Then looping from the index we are in backward until the stopping index position
+    while (index >= stoppingIndex):
+        letters.insert(0, word[index])
+        index -= 1
+    # Then We fill the gaps with * which means that no chars are there
+    while (len(letters) < n):
+        letters.insert(0, '*')
+    return (letters, pair[1])
 
-#This Function is used to get the ngram key itself
+
+# This Function is used to get the ngram key itself
 # as this key consists of ((previous n-1 values,char itself),Diacritic of the the char itself)
-#So we will be aware of what is surrounding
-def ngram_key_generator(word,n):
-    #We get firstly the diacritic of each letter in the given array
+# So we will be aware of what is surrounding
+def ngram_key_generator(word, n):
+    # We get firstly the diacritic of each letter in the given array
     one_letter_diacritic_list = word_iterator(word)
-    n_letters_diacritic_list =[]
-    #Then we loop over that array and for each index inside it we get the previous n chars
-    #Then Generating the final array containing the (n Chars ,diacritic of the last char)
-    for index,element in enumerate(one_letter_diacritic_list):
-        n_letters_diacritic_list.append(include_ngram_letters(word,index,element,n))
+    n_letters_diacritic_list = []
+    # Then we loop over that array and for each index inside it we get the previous n chars
+    # Then Generating the final array containing the (n Chars ,diacritic of the last char)
+    for index, element in enumerate(one_letter_diacritic_list):
+        n_letters_diacritic_list.append(
+            include_ngram_letters(word, index, element, n))
     return n_letters_diacritic_list
-
-    
 
 
 # Bt7sb accuracy (Btedeeha el kelma el sa7 wl predicted)
@@ -132,16 +133,16 @@ def evaluate_word(gold_word, predicted_word, analysis=False):
     """
     correct = 0.  # number of correct tags
     total_num = 0.  # total count of tags
-    #Get the optimal tags
+    # Get the optimal tags
     gold_tags = [tag for _, tag in word_iterator(gold_word)]
-    #Get the predicted tags
+    # Get the predicted tags
     predicted_tags = [tag for _, tag in word_iterator(predicted_word)]
-    #Making sure that they both have the same length
+    # Making sure that they both have the same length
     assert len(gold_tags) == len(predicted_tags), "Length isn't equal"
-    #Looping over gold tags and predicted tags as we know they have the same length
+    # Looping over gold tags and predicted tags as we know they have the same length
     for gold_tag, predicted_tag in zip(gold_tags, predicted_tags):
         total_num += 1
-        #Then if they are equal then increment the correct number by
+        # Then if they are equal then increment the correct number by
         if gold_tag == predicted_tag:
             # print(gold_tag, predicted_tag)
             correct += 1.
@@ -215,15 +216,47 @@ def tokenization(sentence):
     return sentence.split()
 
 
-def preprocess(sentence):
+def word_level_preprocess(sentence):
     cleanedSentence = data_cleaning(sentence)
     finalSentence = tokenization(cleanedSentence)
     return finalSentence
 
-#Some Features should take care of the position of the letter
-#As some diacritics like double fat7a and double kasra and double damma should be at the end of the word
 
-#Now We Have 15 Classes
+def characters_with_diacritics_tuples(sentence):
+    sentence = word_level_preprocess(sentence)
+    result = []
+    for word in sentence:
+        result += word_iterator(word)
+    return result
+
+
+def ngram(sentence):
+    sentence = word_level_preprocess(sentence)
+    result = []
+    n = 3
+    for word in sentence:
+        result.append(ngram_key_generator(word, n))
+
+    return result
+
+
+if __name__ == '__main__':
+    sentence = "الشَّ12هَادَةِ عَلَيْ[هِ مِثْلُY#!"
+    print("Test Sentence:", sentence)
+    print("----------------------------------------------")
+    print("Word Level:", word_level_preprocess(sentence))
+    print("----------------------------------------------")
+    print("Characters with Diacritics:",
+          characters_with_diacritics_tuples(sentence))
+    print("----------------------------------------------")
+    print("NGram:", ngram(sentence))
+
+#############################################################################################################
+# Some Features should take care of the position of the letter
+# As some diacritics like double fat7a and double kasra and double damma should be at the end of the word
+
+
+# Now We Have 15 Classes
 # 1-> Tanween bl fat7a (Lazm fe akher letter)
 # 2-> Tanween bl damma (Lazm fe akher letter)
 # 3-> Tanween bl kasra (Lazm fe akher letter)
@@ -239,9 +272,3 @@ def preprocess(sentence):
 # 13-> Shadda m3 tanween bl damma (Lazm fe akher letter)
 # 14-> Shadda m3 tanween bl kasra (Lazm fe akher letter)
 # 15-> No Diacritic
-if __name__ == '__main__':
-    sentence = preprocess("الشَّ12هَادَةِ عَلَيْ[هِ مِثْلُY#!")
-    print(sentence)
-    for word in sentence:
-        print(ngram_key_generator(word,3))
-        print(clean_word(word))
