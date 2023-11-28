@@ -3,9 +3,9 @@ import re
 # Convert using chr(diacritics[0])
 # Ascii of The Diacritics
 # Tanween bl fat7 - Tanween bl dam - Tanween bl kasr - Fat7a - Damma - Kasra - Shadda - Skoon
-diacritics = [1611, 1612, 1613, 1614, 1615, 1616, 1617, 1618]
+DIACRITICS = [1611, 1612, 1613, 1614, 1615, 1616, 1617, 1618]
 # Fasla
-connector = 1548
+CONNECTOR = 1548
 # Fasla Man2ota = 1563
 OTHER = 'O'
 # VOWEL_SYMBOLS = {'ٌ', 'ً', 'ٍ', 'ُ', 'َ', 'ِ', 'ْ', 'ٌّ', 'ّ'}
@@ -15,7 +15,7 @@ VOWEL_REGEX = re.compile('|'.join(VOWEL_SYMBOLS))
 
 
 # Bta5od kelma w tefsel el tshkeel 3n kol 7arf
-def wordIterator(word):
+def word_iterator(word):
     """
     This function takes a word (discretized or not) as an input and returns 
     a list of tuple where the first item is the character and the second
@@ -97,7 +97,7 @@ def evaluate_word(gold_word, predicted_word, analysis=False):
 
 
 # Btsheel el tshkeel 5ales
-def cleanWord(word):
+def clean_word(word):
     """
     This function takes a word (discrentized or not) as an input and returns 
     the word itself without any discrentization.
@@ -111,45 +111,45 @@ def cleanWord(word):
     return re.sub(VOWEL_REGEX, '', word)
 
 
-def isTashkeel(text):
-    return any(ord(ch) in diacritics for ch in text)
+def is_tashkeel(text):
+    return any(ord(ch) in DIACRITICS for ch in text)
 
 
-def clearTashkeel(text):
-    text = "".join(c for c in text if ord(c) not in diacritics)
+def clear_tashkeel(text):
+    text = "".join(c for c in text if ord(c) not in DIACRITICS)
     return text
 
 
-def getDiacritics():
-    return "".join(chr(item)+"|" for item in diacritics)[:-1]
+def get_diacritics():
+    return "".join(chr(item)+"|" for item in DIACRITICS)[:-1]
 
 
-def removeUndesiredCharacters(sentence):
+def remove_undesired_characters(sentence):
     # Except: . ? ! ,
     pattern = re.compile('[\[\]\\/@#\$&%\^\+<=>(){}\*\|\`:;\'"\~_؛-]')
     return re.sub(pattern, '', sentence)
 
 
-def removeHtmlTags(sentence):
+def remove_html_tags(sentence):
     pattern = re.compile('<.*?>')
     return re.sub(pattern, '', sentence)
 
 
-def removeNumbers(sentence):
+def remove_numbers(sentence):
     pattern = re.compile('[٠-٩0-9]')
     return re.sub(pattern, '', sentence)
 
 
-def removeEnglishLetters(sentence):
+def remove_english_letters(sentence):
     pattern = re.compile('[a-zA-Z]')
     return re.sub(pattern, '', sentence)
 
 
-def dataCleaning(sentence):
-    sentence = removeEnglishLetters(sentence)
-    sentence = removeNumbers(sentence)
-    sentence = removeHtmlTags(sentence)
-    sentence = removeUndesiredCharacters(sentence)
+def data_cleaning(sentence):
+    sentence = remove_english_letters(sentence)
+    sentence = remove_numbers(sentence)
+    sentence = remove_html_tags(sentence)
+    sentence = remove_undesired_characters(sentence)
     return sentence
 
 
@@ -161,14 +161,14 @@ def tokenization(sentence):
 
 
 def preprocess(sentence):
-    cleanedSentence = dataCleaning(sentence)
+    cleanedSentence = data_cleaning(sentence)
     finalSentence = tokenization(cleanedSentence)
     return finalSentence
 
 
 if __name__ == '__main__':
-    sentence = preprocess("الشَّ12هَادَةِ عَلَيْ[هِ مِثْY#!لُ")
+    sentence = preprocess("الشَّ12هَادَةِ عَلَيْ[هِ مِثْلُY#!")
     print(sentence)
     for word in sentence:
-        print(wordIterator(word))
-        print(cleanWord(word))
+        print(word_iterator(word))
+        print(clean_word(word))
