@@ -187,6 +187,21 @@ def preprocess(sentence):
     finalSentence = tokenization(cleanedSentence)
     return finalSentence
 
+#Some Features should take care of the position of the letter
+#As some diacritics like double fat7a and double kasra and double damma should be at the end of the word
+
+#Now We Have 11 Classes
+# 1-> Tanween bl fat7a (Lazm fe akher letter)
+# 2-> Tanween bl damma
+# 3-> Tanween bl kasra
+# 4-> Fat7a
+# 5-> damma
+# 6-> Kasra
+# 7-> Shadda
+# 8-> Skoon
+# 9-> Shadda m3 Fat7a
+# 10-> Shadda m3 damma
+# 11-> Shadda m3 kasra
 
 if __name__ == '__main__':
     sentence = preprocess("الشَّ12هَادَةِ عَلَيْ[هِ مِثْلُY#!")
