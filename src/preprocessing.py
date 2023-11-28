@@ -42,10 +42,6 @@ def word_iterator(word):
     #idx will start at 0
     #char we got here is the middle char as we have its prev element and its next element
     for idx, char in enumerate(word[1:]):
-        print(word[idx])
-        print(idx)
-        print(char)
-        print("--------")
         try:
             # first 1 because we skipped the first character
             # second 1 because it's the next character
@@ -83,6 +79,43 @@ def word_iterator(word):
                 output.append((char, OTHER))
         prev_char = char
     return output
+
+#This function is used to get aware of the surrounding letters of the current letter
+#as we can get n letters before this char as they may change the values of diacritic this char can take
+def include_ngram_letters(word,index,pair,n):
+    #Firstly this letters array contains the previous chars in the word
+    letters=[]
+    #But Firstly we need to remove the diacritics themselves from the word
+    word = clean_word(word)
+    #Then we should get the position where we should stop at
+    #If the previous n chars are out of the limit of the word then we should stop at letter 0
+    stoppingIndex = index-n+1
+    #Checking that we should stop at letter 0
+    if(stoppingIndex < 0):
+        stoppingIndex=0
+    #Then looping from the index we are in backward until the stopping index position
+    while(index >= stoppingIndex):
+        letters.insert(0,word[index])
+        index-=1
+    #Then We fill the gaps with * which means that no chars are there
+    while(len(letters)<n):
+        letters.insert(0,'*')
+    return (letters,pair[1])
+
+#This Function is used to get the ngram key itself
+# as this key consists of ((previous n-1 values,char itself),Diacritic of the the char itself)
+#So we will be aware of what is surrounding
+def ngram_key_generator(word,n):
+    #We get firstly the diacritic of each letter in the given array
+    one_letter_diacritic_list = word_iterator(word)
+    n_letters_diacritic_list =[]
+    #Then we loop over that array and for each index inside it we get the previous n chars
+    #Then Generating the final array containing the (n Chars ,diacritic of the last char)
+    for index,element in enumerate(one_letter_diacritic_list):
+        n_letters_diacritic_list.append(include_ngram_letters(word,index,element,n))
+    return n_letters_diacritic_list
+
+    
 
 
 # Bt7sb accuracy (Btedeeha el kelma el sa7 wl predicted)
@@ -190,10 +223,10 @@ def preprocess(sentence):
 #Some Features should take care of the position of the letter
 #As some diacritics like double fat7a and double kasra and double damma should be at the end of the word
 
-#Now We Have 11 Classes
+#Now We Have 15 Classes
 # 1-> Tanween bl fat7a (Lazm fe akher letter)
-# 2-> Tanween bl damma
-# 3-> Tanween bl kasra
+# 2-> Tanween bl damma (Lazm fe akher letter)
+# 3-> Tanween bl kasra (Lazm fe akher letter)
 # 4-> Fat7a
 # 5-> damma
 # 6-> Kasra
@@ -202,10 +235,13 @@ def preprocess(sentence):
 # 9-> Shadda m3 Fat7a
 # 10-> Shadda m3 damma
 # 11-> Shadda m3 kasra
-
+# 12-> Shadda m3 tanween bl fat7a (Lazm fe akher letter)
+# 13-> Shadda m3 tanween bl damma (Lazm fe akher letter)
+# 14-> Shadda m3 tanween bl kasra (Lazm fe akher letter)
+# 15-> No Diacritic
 if __name__ == '__main__':
     sentence = preprocess("الشَّ12هَادَةِ عَلَيْ[هِ مِثْلُY#!")
     print(sentence)
     for word in sentence:
-        print(word_iterator(word))
+        print(ngram_key_generator(word,3))
         print(clean_word(word))
