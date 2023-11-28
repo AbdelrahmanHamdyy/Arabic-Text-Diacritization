@@ -39,24 +39,46 @@ def word_iterator(word):
     """
     output = []
     prev_char = word[0]
+    #idx will start at 0
+    #char we got here is the middle char as we have its prev element and its next element
     for idx, char in enumerate(word[1:]):
+        print(word[idx])
+        print(idx)
+        print(char)
+        print("--------")
         try:
             # first 1 because we skipped the first character
             # second 1 because it's the next character
             next_char = word[idx+1+1]
         except IndexError:  # will happen with the last character only
             next_char = ''
+        #if the char is a diacritic then the prev char is mtshkl
         if char in VOWEL_SYMBOLS:
+            #Here if we have exceeded the limit
+            #Then the prev char is a letter
+            #the current char is a diacritic
+            #Then the end of the line
+            #so add it
             if next_char == '' and prev_char not in VOWEL_SYMBOLS:
                 output.append((prev_char, char))
+            #Here the prev char isn't a vowel then it's a letter
+            #And the Next char isn't a vowel
+            #then we will append the prev char with the current char
             elif prev_char not in VOWEL_SYMBOLS and next_char not in VOWEL_SYMBOLS:
                 output.append((prev_char, char))
+            #To Handle if there is Shadda + Fat7a for example
+            #Then prev char isn't a vowel
+            #but the char and the next char are vowels
+            #Then we will append the letter with Shadda+Fat7a
             elif prev_char not in VOWEL_SYMBOLS and next_char in VOWEL_SYMBOLS:
                 output.append((prev_char, char+next_char))
         else:
-            # if a character wasn't diacritized
+            #Here we Found a letter Already
+            #Then the prev char doesn't have any diacritic ahead
+            #Then add this char with no diacritic
             if prev_char not in VOWEL_SYMBOLS:
                 output.append((prev_char, OTHER))
+            #We are in the end of the line
             if next_char == '':
                 output.append((char, OTHER))
         prev_char = char
@@ -78,9 +100,9 @@ def evaluate_word(gold_word, predicted_word, analysis=False):
     correct = 0.  # number of correct tags
     total_num = 0.  # total count of tags
     #Get the optimal tags
-    gold_tags = [tag for _, tag in wordIterator(gold_word)]
+    gold_tags = [tag for _, tag in word_iterator(gold_word)]
     #Get the predicted tags
-    predicted_tags = [tag for _, tag in wordIterator(predicted_word)]
+    predicted_tags = [tag for _, tag in word_iterator(predicted_word)]
     #Making sure that they both have the same length
     assert len(gold_tags) == len(predicted_tags), "Length isn't equal"
     #Looping over gold tags and predicted tags as we know they have the same length
@@ -126,7 +148,7 @@ def get_diacritics():
 
 def remove_undesired_characters(sentence):
     # Except: . ? ! ,
-    pattern = re.compile('[\[\]\\/@#\$&%\^\+<=>(){}\*\|\`:;\'"\~_؛-]')
+    pattern = re.compile('[\[\]\\/@#\$&%\^\+<=>(){}\*\|\`:;\'"\~_!\.\?\,؛-]')
     return re.sub(pattern, '', sentence)
 
 
