@@ -1,8 +1,12 @@
 import re
 
 # Convert using chr(diacritics[0])
-diacritics = [1614, 1615, 1616, 1618, 1617, 1611, 1612, 1613]
-connector = 1617
+# Ascii of The Diacritics
+# Tanween bl fat7 - Tanween bl dam - Tanween bl kasr - Fat7a - Damma - Kasra - Shadda - Skoon
+diacritics = [1611, 1612, 1613, 1614, 1615, 1616, 1617, 1618]
+# Fasla
+connector = 1548
+# Fasla Man2ota = 1563
 OTHER = 'O'
 # VOWEL_SYMBOLS = {'ٌ', 'ً', 'ٍ', 'ُ', 'َ', 'ِ', 'ْ', 'ٌّ', 'ّ'}
 VOWEL_SYMBOLS = {chr(1614), chr(1615), chr(1616), chr(
@@ -13,7 +17,7 @@ VOWEL_REGEX = re.compile('|'.join(VOWEL_SYMBOLS))
 # Bta5od kelma w tefsel el tshkeel 3n kol 7arf
 def wordIterator(word):
     """
-    This function takes a word (discrentized or not) as an input and returns 
+    This function takes a word (discretized or not) as an input and returns 
     a list of tuple where the first item is the character and the second
     item is the vowel_symbol. For example:
     >>> word_iterator('الْأَلْبَاب')
@@ -26,6 +30,12 @@ def wordIterator(word):
       ('ب', 'O') ]
     As we can see, the symbol O stands for OTHER and it means that the character
     doesn't have an associated vowel symbol
+
+    So Here the chars we have is something like letter-diacritic letter-diacritic 
+    and some letters don't have diacritic 
+
+    This is what is done here as, if the last char is a normal letter (not a diacritic) then we check for the next one
+    if it's a diacritic then we will append the char with its diacritic, if not then we will append the char with Other(which stands for there is no diacritic)
     """
     output = []
     prev_char = word[0]
@@ -67,11 +77,16 @@ def evaluate_word(gold_word, predicted_word, analysis=False):
     """
     correct = 0.  # number of correct tags
     total_num = 0.  # total count of tags
+    #Get the optimal tags
     gold_tags = [tag for _, tag in wordIterator(gold_word)]
+    #Get the predicted tags
     predicted_tags = [tag for _, tag in wordIterator(predicted_word)]
-    assert len(gold_tags) == len(predicted_tags)
+    #Making sure that they both have the same length
+    assert len(gold_tags) == len(predicted_tags), "Length isn't equal"
+    #Looping over gold tags and predicted tags as we know they have the same length
     for gold_tag, predicted_tag in zip(gold_tags, predicted_tags):
         total_num += 1
+        #Then if they are equal then increment the correct number by
         if gold_tag == predicted_tag:
             # print(gold_tag, predicted_tag)
             correct += 1.
