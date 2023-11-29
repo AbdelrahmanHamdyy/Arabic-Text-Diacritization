@@ -182,7 +182,7 @@ def get_diacritics():
 
 def remove_undesired_characters(sentence):
     # Except: . ? ! ,
-    pattern = re.compile('[\[\]\\/@#\$&%\^\+<=>(){}\*\|\`:;\'"\~_!\.\?\,؛-]')
+    pattern = re.compile('[\[\]\\/@#\$&%\^\+<=>(){}\*\|\`:;\'"\~_!\.\?؟\,،؛-]')
     return re.sub(pattern, '', sentence)
 
 
@@ -206,6 +206,9 @@ def data_cleaning(sentence):
     sentence = remove_numbers(sentence)
     sentence = remove_html_tags(sentence)
     sentence = remove_undesired_characters(sentence)
+    # Remove extra spaces
+    sentence = re.sub(r'\s+', ' ', sentence)
+    sentence = ' '.join(sentence.split())
     return sentence
 
 
@@ -226,15 +229,15 @@ def characters_with_diacritics_tuples(sentence):
     sentence = word_level_preprocess(sentence)
     result = []
     for word in sentence:
-        result += word_iterator(word)
+        result += word_iterator(word.strip())
     return result
 
 
 def remove_diacritics(sentence):
     sentence = word_level_preprocess(sentence)
-    result = []
+    result = ""
     for word in sentence:
-        result.append(clean_word(word))
+        result += clean_word(word.strip()) + " "
     return result
 
 
@@ -242,13 +245,13 @@ def ngram(sentence, n):
     sentence = word_level_preprocess(sentence)
     result = []
     for word in sentence:
-        result.append(ngram_key_generator(word, n))
+        result.append(ngram_key_generator(word.strip(), n))
 
     return result
 
 
 if __name__ == '__main__':
-    sentence = "الشَّ12هَادَةِ عَلَيْ[هِ مِثْلُY#!"
+    sentence = "الشَّ12هَادَةِ عَلَيْ[هِ   مِثْلُY#!"
     print("Test Sentence:", sentence)
     print("----------------------------------------------")
     print("Cleaned Sentence:", data_cleaning(sentence))
@@ -283,3 +286,5 @@ if __name__ == '__main__':
 # 13-> Shadda m3 tanween bl damma (Lazm fe akher letter)
 # 14-> Shadda m3 tanween bl kasra (Lazm fe akher letter)
 # 15-> No Diacritic
+
+# (\b[\w]+\b)
