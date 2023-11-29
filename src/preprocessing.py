@@ -230,10 +230,17 @@ def characters_with_diacritics_tuples(sentence):
     return result
 
 
-def ngram(sentence):
+def remove_diacritics(sentence):
     sentence = word_level_preprocess(sentence)
     result = []
-    n = 3
+    for word in sentence:
+        result.append(clean_word(word))
+    return result
+
+
+def ngram(sentence, n):
+    sentence = word_level_preprocess(sentence)
+    result = []
     for word in sentence:
         result.append(ngram_key_generator(word, n))
 
@@ -244,12 +251,16 @@ if __name__ == '__main__':
     sentence = "الشَّ12هَادَةِ عَلَيْ[هِ مِثْلُY#!"
     print("Test Sentence:", sentence)
     print("----------------------------------------------")
+    print("Cleaned Sentence:", data_cleaning(sentence))
+    print("----------------------------------------------")
     print("Word Level:", word_level_preprocess(sentence))
+    print("----------------------------------------------")
+    print("Diacritics Removed:", remove_diacritics(sentence))
     print("----------------------------------------------")
     print("Characters with Diacritics:",
           characters_with_diacritics_tuples(sentence))
     print("----------------------------------------------")
-    print("NGram:", ngram(sentence))
+    print("NGram:", ngram(sentence, 3))
 
 #############################################################################################################
 # Some Features should take care of the position of the letter
