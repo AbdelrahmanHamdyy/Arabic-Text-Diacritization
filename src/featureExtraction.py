@@ -1,7 +1,7 @@
 from preprocessing import *
 from utils import *
 import pandas as pd
-from gensim.models import Word2Vec
+from gensim.models import Word2Vec, FastText
 from sklearn.feature_extraction.text import TfidfVectorizer
 import torch
 import csv
@@ -19,8 +19,9 @@ corpus = readFile(PATH)
 # 5. Contextual embeddings
 
 
-# Word Embeddings
-def extractWordEmbeddings():
+# ************** Word Embeddings **************
+# Using Word2Vec
+def word_embeddings_w2v():
     data = []
     for sentence in corpus:
         sentence = word_level_preprocess(sentence)
@@ -31,7 +32,38 @@ def extractWordEmbeddings():
     model.save('models/w2vmodel')
 
 
-# TF-IDF
+# Using FastText
+def word_embeddings_fasttext():
+    data = []
+    for sentence in corpus:
+        sentence = word_level_preprocess(sentence)
+        data.append(sentence)
+
+    # Defining values for parameters
+    embedding_size = 300
+    window_size = 5
+    min_word = 5
+    down_sampling = 1e-2
+
+    fast_Text_model = FastText(data,
+                               vector_size=embedding_size,
+                               window=window_size,
+                               min_count=min_word,
+                               sample=down_sampling,
+                               workers=4,
+                               epochs=10,
+                               seed=42,
+                               sg=1)
+    fast_Text_model.save("models/ft_model")
+    # Load saved gensim fastText model
+    fast_Text_model = Word2Vec.load("models/ft_model")
+    print(fast_Text_model.wv['الْبَلَدِ'])
+    print(fast_Text_model.wv.most_similar('الْبَلَدِ', topn=10))
+    print(fast_Text_model.wv.similarity('الْبَلَدِ', 'الْجِيرَانِ'))
+    print(fast_Text_model.wv.most_similar(negative=['الْبَلَدِ'], topn=10))
+
+
+# ************** TF-IDF **************
 def TF_IDF():
     data = []
     for sentence in corpus:
@@ -45,7 +77,7 @@ def TF_IDF():
     print(df_tf_idf)
 
 
-# Contextual Embeddings
+# ************** Contextual Embeddings **************
 def bert_text_preparation(text, tokenizer):
     """
     Preprocesses text input in a way that BERT can interpret.
@@ -89,7 +121,7 @@ def get_bert_embeddings(tokens_tensor, segments_tensor, model):
     return token_vecs_sum
 
 
-def extractContextualEmbeddings():
+def extract_contextual_embeddings():
     model_name = "bert-base-multilingual-cased"
     model = BertModel.from_pretrained(model_name, output_hidden_states=True)
     tokenizer = BertTokenizer.from_pretrained(model_name)
@@ -149,10 +181,10 @@ def extractContextualEmbeddings():
             context_tokens.append(token)
             context_embeddings.append(token_vec)
 
-    visualizeEmbeddings(context_tokens, context_embeddings)
+    visualize_embeddings(context_tokens, context_embeddings)
 
 
-def visualizeEmbeddings(context_tokens, context_embeddings):
+def visualize_embeddings(context_tokens, context_embeddings):
     filepath = "models/embeddings.tsv"
     with open(filepath, 'w+') as file_metadata:
         for i, token in enumerate(context_tokens):
@@ -164,6 +196,14 @@ def visualizeEmbeddings(context_tokens, context_embeddings):
 
 
 if __name__ == '__main__':
-    extractWordEmbeddings()
+    word_embeddings_w2v()
+    word_embeddings_fasttext()
     TF_IDF()
-    extractContextualEmbeddings()
+    extract_contextual_embeddings()
+
+#############################################################################################################################
+# FastText treats each word as composed of n-grams. In word2vec each word is represented as a bag of words but in FastText each word is represented as a bag of character n-gram.
+
+# Character n-gram is the contiguous sequence of n items from a given sample of a character or word. It may be bigram, trigram, etc.
+# For example character trigram (n = 3) of the word “where” will be:
+# <wh, whe, her, ere, re>
