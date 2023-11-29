@@ -7,6 +7,7 @@ import torch
 import csv
 from collections import OrderedDict
 from transformers import BertModel, BertTokenizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 PATH = "../dataset/train.txt"
 corpus = readFile(PATH)
@@ -18,13 +19,33 @@ corpus = readFile(PATH)
 # 4. Trainable embeddings
 # 5. Contextual embeddings
 
+# ************** Bag of Words **************
+def bag_of_words():
+    sentences = []
+    for sentence in corpus:
+        sentence = data_cleaning(sentence.strip())
+        sentences.append(sentence)
+
+    vectorizer = CountVectorizer()
+
+    X = vectorizer.fit_transform(sentences)
+
+    feature_names = vectorizer.get_feature_names_out()
+
+    X_array = X.toarray()
+
+    print("Unique Word List: \n", feature_names)
+    print("Bag of Words Matrix: \n", X_array)
+    df = pd.DataFrame(data=X_array, columns=feature_names, index=sentences)
+    print(df)
+
 
 # ************** Word Embeddings **************
 # Using Word2Vec
 def word_embeddings_w2v():
     data = []
     for sentence in corpus:
-        sentence = word_level_preprocess(sentence)
+        sentence = word_level_preprocess(sentence.strip())
         data.append(sentence)
     model = Word2Vec(data, vector_size=100, min_count=1)
     print(model.wv['الْبَلَدِ'])
@@ -33,10 +54,14 @@ def word_embeddings_w2v():
 
 
 # Using FastText
+# FastText treats each word as composed of n-grams. In word2vec each word is represented as a bag of words but in FastText each word is represented as a bag of character n-gram.
+# Character n-gram is the contiguous sequence of n items from a given sample of a character or word. It may be bigram, trigram, etc.
+# For example character trigram (n = 3) of the word “where” will be:
+# <wh, whe, her, ere, re>
 def word_embeddings_fasttext():
     data = []
     for sentence in corpus:
-        sentence = word_level_preprocess(sentence)
+        sentence = word_level_preprocess(sentence.strip())
         data.append(sentence)
 
     # Defining values for parameters
@@ -64,6 +89,7 @@ def word_embeddings_fasttext():
 
 
 # ************** TF-IDF **************
+# The TF-IDF score for a term in a document is calculated by multiplying its TF and IDF values. This score reflects how important the term is within the context of the document and across the entire corpus. Terms with higher TF-IDF scores are considered more significant.
 def TF_IDF():
     data = []
     for sentence in corpus:
@@ -129,8 +155,8 @@ def extract_contextual_embeddings():
     # Prepare Corpus
     # sentences = []
     # for sentence in corpus:
-    #     sentence = data_cleaning(sentence)
-    #     sentences.append(sentence)
+    #   sentence = data_cleaning(sentence.strip())
+    #   sentences.append(sentence)
 
     sentences = ["bank",
                  "he eventually sold the shares back to the bank at a premium.",
@@ -196,14 +222,8 @@ def visualize_embeddings(context_tokens, context_embeddings):
 
 
 if __name__ == '__main__':
+    bag_of_words()
     word_embeddings_w2v()
     word_embeddings_fasttext()
     TF_IDF()
     extract_contextual_embeddings()
-
-#############################################################################################################################
-# FastText treats each word as composed of n-grams. In word2vec each word is represented as a bag of words but in FastText each word is represented as a bag of character n-gram.
-
-# Character n-gram is the contiguous sequence of n items from a given sample of a character or word. It may be bigram, trigram, etc.
-# For example character trigram (n = 3) of the word “where” will be:
-# <wh, whe, her, ere, re>
