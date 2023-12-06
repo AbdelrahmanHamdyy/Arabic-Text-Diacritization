@@ -250,6 +250,36 @@ def ngram(sentence, n):
     return result
 
 
+def separate_words_and_diacritics(sentence):
+    sentence = word_level_preprocess(sentence)
+    letters = []
+    diacritics = []
+    for word in sentence:
+        prev_char = word[0]
+        for idx, char in enumerate(word[1:]):
+            try:
+                next_char = word[idx + 1 + 1]
+            except IndexError:
+                next_char = ''
+            if char in VOWEL_SYMBOLS:
+                if prev_char not in VOWEL_SYMBOLS:
+                    letters.append(prev_char)
+                    if next_char == '' or next_char not in VOWEL_SYMBOLS:
+                        diacritics.append(char)
+                    elif next_char in VOWEL_SYMBOLS:
+                        diacritics.append(char + next_char)
+            else:
+                if prev_char not in VOWEL_SYMBOLS:
+                    letters.append(prev_char)
+                    diacritics.append(OTHER)
+                if next_char == '':
+                    letters.append(char)
+                    diacritics.append(OTHER)
+            prev_char = char
+
+    return letters, diacritics
+
+
 if __name__ == '__main__':
     sentence = "الشَّ12هَادَةِ عَلَيْ[هِ   مِثْلُY#!"
     print("Test Sentence:", sentence)
@@ -257,6 +287,10 @@ if __name__ == '__main__':
     print("Cleaned Sentence:", data_cleaning(sentence))
     print("----------------------------------------------")
     print("Word Level:", word_level_preprocess(sentence))
+    print("----------------------------------------------")
+    letters, diacritics = separate_words_and_diacritics(sentence)
+    print("Letters:", letters)
+    print("Diacritics:", diacritics)
     print("----------------------------------------------")
     print("Diacritics Removed:", remove_diacritics(sentence))
     print("----------------------------------------------")
