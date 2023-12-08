@@ -267,7 +267,7 @@ def separate_words_and_diacritics(sentence):
                     if next_char == '' or next_char not in VOWEL_SYMBOLS:
                         diacritics.append(char)
                     elif next_char in VOWEL_SYMBOLS:
-                        diacritics.append(char + next_char)
+                        diacritics.append(tuple(char + next_char))
             else:
                 if prev_char not in VOWEL_SYMBOLS:
                     letters.append(prev_char)
