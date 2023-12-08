@@ -1,4 +1,5 @@
 import re
+from lang_trans.arabic import buckwalter
 
 # Convert using chr(diacritics[0])
 # Ascii of The Diacritics
@@ -280,13 +281,27 @@ def separate_words_and_diacritics(sentence):
     return letters, diacritics
 
 
-if __name__ == '__main__':
-    sentence = "الشَّ12هَادَةِ عَلَيْ[هِ   مِثْلُY#!"
+def get_transliterated_word(word):
+    return buckwalter.transliterate(word)
+
+
+def run_buckwalter(sentence):
+    sentence = word_level_preprocess(sentence)
+    output = []
+    for word in sentence:
+        output.append(get_transliterated_word(word))
+    return output
+
+
+def preprocess():
+    sentence = "( قَوْلُهُ لِعَدَمِ مَا تَتَعَلَّقُ إلَخْ ) أَيْ الْوَصِيَّةُ ( قَوْلُهُ مَا مَرَّ ) أَيْ قُبَيْلَ قَوْلِ الْمَتْنِ لَغَتْ وَلَوْ اقْتَصَرَ عَلَى أَوْصَيْت لَهُ بِشَاةٍ أَوْ أَعْطُوهُ شَاةً وَلَا غَنَمَ لَهُ عِنْدَ الْمَوْتِ هَلْ تَبْطُلُ الْوَصِيَّةُ أَوْ يُشْتَرَى لَهُ شَاةٌ وَيُؤْخَذُ مِنْ قَوْلِهِ الْآتِي كَمَا لَوْ لَمْ يَقُلْ مِنْ مَالِي وَلَا مِنْ غَنَمِي أَنَّهَا لَا تَبْطُلُ ، وَعِبَارَةُ الْكَنْزِ وَلَوْ لَمْ يَقُلْ مِنْ مَالِي وَلَا مِنْ غَنَمِي لَمْ يَتَعَيَّنْ غَنَمُهُ إنْ كَانَتْ انْتَهَتْ ا ه سم ( قَوْلُهُ فَيُعْطَى وَاحِدَةً مِنْهَا إلَخْ ) كَمَا لَوْ كَانَتْ مَوْجُودَةً عِنْدَ الْوَصِيَّةِ وَالْمَوْتِ ، وَلَا يَجُوزُ أَنْ يُعْطَى وَاحِدَةً مِنْ غَيْرِ غَنَمِهِ فِي الصُّورَتَيْنِ وَإِنْ تَرَاضَيَا ؛ لِأَنَّهُ صُلْحٌ عَلَى مَجْهُولٍ مُغْنِي وَنِهَايَةٌ قَالَ ع ش قَوْلُهُ وَاحِدَةً مِنْهَا أَيْ كَامِلَةً ، وَلَا يَجُوزُ أَنْ يُعْطَى نِصْفَيْنِ مِنْ شَاتَيْنِ ؛ لِأَنَّهُ لَا يُسَمَّى شَاةً وَقَوْلُهُ وَلَا يَجُوزُ أَنْ يُعْطَى وَاحِدَةً مِنْ غَيْرِ غَنَمِهِ وَيَنْبَغِي أَنْ يُقَالَ مِثْلُ ذَلِكَ فِي الْأَرِقَّاءِ ا ه ."
     print("Test Sentence:", sentence)
     print("----------------------------------------------")
     print("Cleaned Sentence:", data_cleaning(sentence))
     print("----------------------------------------------")
     print("Word Level:", word_level_preprocess(sentence))
+    print("----------------------------------------------")
+    print("After Buckwalter:", run_buckwalter(sentence))
     print("----------------------------------------------")
     letters, diacritics = separate_words_and_diacritics(sentence)
     print("Letters:", letters)
@@ -298,6 +313,12 @@ if __name__ == '__main__':
           characters_with_diacritics_tuples(sentence))
     print("----------------------------------------------")
     print("NGram:", ngram(sentence, 3))
+
+
+if __name__ == '__main__':
+    preprocess()
+    # sentence = "الشَّ12هَادَةِ عَلَيْ[هِ   مِثْلُY#!"
+    # run_buckwalter(sentence)
 
 #############################################################################################################
 # Some Features should take care of the position of the letter

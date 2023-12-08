@@ -45,11 +45,12 @@ def bag_of_words():
 def word_embeddings_w2v():
     data = []
     for sentence in corpus:
-        sentence = word_level_preprocess(sentence.strip())
+        sentence = run_buckwalter(sentence.strip())
         data.append(sentence)
     model = Word2Vec(data, vector_size=100, min_count=1)
-    print(model.wv['الْبَلَدِ'])
-    print(model.wv.most_similar('الْبَلَدِ'))
+    word = get_transliterated_word('الْبَلَدِ')
+    print(model.wv[word])
+    print(model.wv.most_similar(word))
     model.save('models/w2vmodel')
 
 
@@ -93,14 +94,15 @@ def word_embeddings_fasttext():
 def TF_IDF():
     data = []
     for sentence in corpus:
-        sentence = data_cleaning(sentence)
-        data.append(sentence)
-    tr_idf_model = TfidfVectorizer()
+        sentence = run_buckwalter(sentence)
+        data.append(' '.join(sentence))
+    tr_idf_model = TfidfVectorizer(lowercase=False)
     tf_idf_vector = tr_idf_model.fit_transform(data)
     tf_idf_array = tf_idf_vector.toarray()
     words_set = tr_idf_model.get_feature_names_out()
     df_tf_idf = pd.DataFrame(tf_idf_array, columns=words_set)
-    print(df_tf_idf)
+    df_tf_idf.to_csv('your_dataframe.csv', index=False)
+    # print(df_tf_idf)
 
 
 # ************** Contextual Embeddings **************
@@ -222,8 +224,8 @@ def visualize_embeddings(context_tokens, context_embeddings):
 
 
 if __name__ == '__main__':
-    bag_of_words()
+    # bag_of_words()
     word_embeddings_w2v()
-    word_embeddings_fasttext()
-    TF_IDF()
-    extract_contextual_embeddings()
+    # word_embeddings_fasttext()
+    # TF_IDF()
+    # extract_contextual_embeddings()
