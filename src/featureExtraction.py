@@ -47,7 +47,9 @@ def word_embeddings_w2v():
     for sentence in corpus:
         sentence = run_buckwalter(sentence.strip())
         data.append(sentence)
-    model = Word2Vec(data, vector_size=100, min_count=1)
+    model = Word2Vec( vector_size=100, min_count=1, window=3)
+    model.build_vocab(data, progress_per=10000)
+    model.train(data, total_examples=model.corpus_count, epochs=30, report_delay=1)
     word = get_transliterated_word('الْبَلَدِ')
     print(model.wv[word])
     print(model.wv.most_similar(word))
