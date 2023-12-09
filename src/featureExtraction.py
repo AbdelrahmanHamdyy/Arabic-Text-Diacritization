@@ -45,12 +45,13 @@ def bag_of_words():
 def word_embeddings_w2v():
     data = []
     for sentence in corpus:
-        sentence = run_buckwalter(sentence.strip())
+        sentence = run_buckwalter(remove_diacritics(sentence.strip()))
         data.append(sentence)
-    model = Word2Vec( vector_size=100, min_count=1, window=3)
+    model= Word2Vec( vector_size=100, min_count=1, window=30)
     model.build_vocab(data, progress_per=10000)
     model.train(data, total_examples=model.corpus_count, epochs=30, report_delay=1)
-    word = get_transliterated_word('الْبَلَدِ')
+    # print(remove_diacritics('قَالَ'))
+    word = get_transliterated_word("مالك")
     print(model.wv[word])
     print(model.wv.most_similar(word))
     model.save('models/w2vmodel')
@@ -64,7 +65,7 @@ def word_embeddings_w2v():
 def word_embeddings_fasttext():
     data = []
     for sentence in corpus:
-        sentence = word_level_preprocess(sentence.strip())
+        sentence = run_buckwalter(remove_diacritics(sentence.strip()))
         data.append(sentence)
 
     # Defining values for parameters
@@ -73,7 +74,7 @@ def word_embeddings_fasttext():
     min_word = 5
     down_sampling = 1e-2
 
-    fast_Text_model = FastText(data,
+    fast_Text_model = FastText(
                                vector_size=embedding_size,
                                window=window_size,
                                min_count=min_word,
@@ -82,13 +83,15 @@ def word_embeddings_fasttext():
                                epochs=10,
                                seed=42,
                                sg=1)
+    fast_Text_model.build_vocab(data, progress_per=10000)
+    fast_Text_model.train(data, total_examples=fast_Text_model.corpus_count, epochs=30, report_delay=1)
     fast_Text_model.save("models/ft_model")
     # Load saved gensim fastText model
     fast_Text_model = Word2Vec.load("models/ft_model")
-    print(fast_Text_model.wv['الْبَلَدِ'])
-    print(fast_Text_model.wv.most_similar('الْبَلَدِ', topn=10))
-    print(fast_Text_model.wv.similarity('الْبَلَدِ', 'الْجِيرَانِ'))
-    print(fast_Text_model.wv.most_similar(negative=['الْبَلَدِ'], topn=10))
+    print(fast_Text_model.wv[get_transliterated_word(remove_diacritics('يُقَالَ'))])
+    print(fast_Text_model.wv.most_similar(get_transliterated_word(remove_diacritics('يُقَالَ')), topn=10))
+    print(fast_Text_model.wv.similarity(get_transliterated_word(remove_diacritics('يُقَالَ')),get_transliterated_word(remove_diacritics('قَالَ'))))
+    # print(fast_Text_model.wv.most_similar(negative=['الْبَلَدِ'], topn=10))
 
 
 # ************** TF-IDF **************
@@ -227,7 +230,7 @@ def visualize_embeddings(context_tokens, context_embeddings):
 
 if __name__ == '__main__':
     # bag_of_words()
-    word_embeddings_w2v()
-    # word_embeddings_fasttext()
+    # word_embeddings_w2v()
+    word_embeddings_fasttext()
     # TF_IDF()
     # extract_contextual_embeddings()
