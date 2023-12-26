@@ -4,15 +4,11 @@ from lang_trans.arabic import buckwalter
 # Convert using chr(diacritics[0])
 # Ascii of The Diacritics
 # Tanween bl fat7 - Tanween bl dam - Tanween bl kasr - Fat7a - Damma - Kasra - Shadda - Skoon
-DIACRITICS = [1611, 1612, 1613, 1614, 1615, 1616, 1617, 1618]
-# Fasla
-CONNECTOR = 1548
-# Fasla Man2ota = 1563
-OTHER = 'O'
-# VOWEL_SYMBOLS = {'ٌ', 'ً', 'ٍ', 'ُ', 'َ', 'ِ', 'ْ', 'ٌّ', 'ّ'}
-VOWEL_SYMBOLS = {chr(1614), chr(1615), chr(1616), chr(
-    1618), chr(1617), chr(1611), chr(1612), chr(1613)}
-VOWEL_REGEX = re.compile('|'.join(VOWEL_SYMBOLS))
+OTHER = ' '
+# DIACRITICS = {'ٌ', 'ً', 'ٍ', 'ُ', 'َ', 'ِ', 'ْ', 'ٌّ', 'ّ'}
+DIACRITICS = {OTHER, chr(1614), chr(1615), chr(1616), chr(
+    1618), chr(1617), chr(1611), chr(1612), chr(1613), " َّ", " ِّ", " ُّ", " ٌّ", " ًّ", " ٍّ"}
+VOWEL_REGEX = re.compile('|'.join(DIACRITICS))
 
 
 # Bta5od kelma w tefsel el tshkeel 3n kol 7arf
@@ -50,30 +46,30 @@ def word_iterator(word):
         except IndexError:  # will happen with the last character only
             next_char = ''
         # if the char is a diacritic then the prev char is mtshkl
-        if char in VOWEL_SYMBOLS:
+        if char in DIACRITICS:
             # Here if we have exceeded the limit
             # Then the prev char is a letter
             # the current char is a diacritic
             # Then the end of the line
             # so add it
-            if next_char == '' and prev_char not in VOWEL_SYMBOLS:
+            if next_char == '' and prev_char not in DIACRITICS:
                 output.append((prev_char, char))
             # Here the prev char isn't a vowel then it's a letter
             # And the Next char isn't a vowel
             # then we will append the prev char with the current char
-            elif prev_char not in VOWEL_SYMBOLS and next_char not in VOWEL_SYMBOLS:
+            elif prev_char not in DIACRITICS and next_char not in DIACRITICS:
                 output.append((prev_char, char))
             # To Handle if there is Shadda + Fat7a for example
             # Then prev char isn't a vowel
             # but the char and the next char are vowels
             # Then we will append the letter with Shadda+Fat7a
-            elif prev_char not in VOWEL_SYMBOLS and next_char in VOWEL_SYMBOLS:
+            elif prev_char not in DIACRITICS and next_char in DIACRITICS:
                 output.append((prev_char, char+next_char))
         else:
             # Here we Found a letter Already
             # Then the prev char doesn't have any diacritic ahead
             # Then add this char with no diacritic
-            if prev_char not in VOWEL_SYMBOLS:
+            if prev_char not in DIACRITICS:
                 output.append((prev_char, OTHER))
             # We are in the end of the line
             if next_char == '':
@@ -236,9 +232,9 @@ def characters_with_diacritics_tuples(sentence):
 
 def remove_diacritics(sentence):
     sentence = word_level_preprocess(sentence)
-    result = ""
+    result = []
     for word in sentence:
-        result += clean_word(word.strip()) + " "
+        result.append(clean_word(word.strip()))
     return result
 
 
@@ -253,36 +249,44 @@ def ngram(sentence, n):
 
 def separate_words_and_diacritics(sentence):
     sentence = word_level_preprocess(sentence)
-    letters = []
-    diacritics = []
+    output_chars = []
+    output_diacritics = []
     for word in sentence:
+        letters = []
+        diacritics = []
         prev_char = word[0]
         for idx, char in enumerate(word[1:]):
             try:
                 next_char = word[idx + 1 + 1]
             except IndexError:
                 next_char = ''
-            if char in VOWEL_SYMBOLS:
-                if prev_char not in VOWEL_SYMBOLS:
+            if char in DIACRITICS:
+                if prev_char not in DIACRITICS:
                     letters.append(prev_char)
-                    if next_char == '' or next_char not in VOWEL_SYMBOLS:
+                    if next_char == '' or next_char not in DIACRITICS:
                         diacritics.append(char)
-                    elif next_char in VOWEL_SYMBOLS:
-                        diacritics.append(tuple(char + next_char))
+                    elif next_char in DIACRITICS:
+                        diacritics.append(char + next_char)
             else:
-                if prev_char not in VOWEL_SYMBOLS:
+                if prev_char not in DIACRITICS:
                     letters.append(prev_char)
                     diacritics.append(OTHER)
                 if next_char == '':
                     letters.append(char)
                     diacritics.append(OTHER)
             prev_char = char
+        output_chars.append(letters)
+        output_diacritics.append(diacritics)
 
-    return letters, diacritics
+    return output_chars, output_diacritics
 
 
 def get_transliterated_word(word):
     return buckwalter.transliterate(word)
+
+
+def get_untransliterated_word(word):
+    return buckwalter.untransliterate(word)
 
 
 def run_buckwalter(sentence):
@@ -294,7 +298,7 @@ def run_buckwalter(sentence):
 
 
 def preprocess():
-    sentence = "( قَوْلُهُ لِعَدَمِ مَا تَتَعَلَّقُ إلَخْ ) أَيْ الْوَصِيَّةُ ( قَوْلُهُ مَا مَرَّ ) أَيْ قُبَيْلَ قَوْلِ الْمَتْنِ لَغَتْ وَلَوْ اقْتَصَرَ عَلَى أَوْصَيْت لَهُ بِشَاةٍ أَوْ أَعْطُوهُ شَاةً وَلَا غَنَمَ لَهُ عِنْدَ الْمَوْتِ هَلْ تَبْطُلُ الْوَصِيَّةُ أَوْ يُشْتَرَى لَهُ شَاةٌ وَيُؤْخَذُ مِنْ قَوْلِهِ الْآتِي كَمَا لَوْ لَمْ يَقُلْ مِنْ مَالِي وَلَا مِنْ غَنَمِي أَنَّهَا لَا تَبْطُلُ ، وَعِبَارَةُ الْكَنْزِ وَلَوْ لَمْ يَقُلْ مِنْ مَالِي وَلَا مِنْ غَنَمِي لَمْ يَتَعَيَّنْ غَنَمُهُ إنْ كَانَتْ انْتَهَتْ ا ه سم ( قَوْلُهُ فَيُعْطَى وَاحِدَةً مِنْهَا إلَخْ ) كَمَا لَوْ كَانَتْ مَوْجُودَةً عِنْدَ الْوَصِيَّةِ وَالْمَوْتِ ، وَلَا يَجُوزُ أَنْ يُعْطَى وَاحِدَةً مِنْ غَيْرِ غَنَمِهِ فِي الصُّورَتَيْنِ وَإِنْ تَرَاضَيَا ؛ لِأَنَّهُ صُلْحٌ عَلَى مَجْهُولٍ مُغْنِي وَنِهَايَةٌ قَالَ ع ش قَوْلُهُ وَاحِدَةً مِنْهَا أَيْ كَامِلَةً ، وَلَا يَجُوزُ أَنْ يُعْطَى نِصْفَيْنِ مِنْ شَاتَيْنِ ؛ لِأَنَّهُ لَا يُسَمَّى شَاةً وَقَوْلُهُ وَلَا يَجُوزُ أَنْ يُعْطَى وَاحِدَةً مِنْ غَيْرِ غَنَمِهِ وَيَنْبَغِي أَنْ يُقَالَ مِثْلُ ذَلِكَ فِي الْأَرِقَّاءِ ا ه ."
+    sentence = "أَيْ الْوَصِيَّةُ ( قَوْلُهُ مَا مَرَّ"
     print("Test Sentence:", sentence)
     print("----------------------------------------------")
     print("Cleaned Sentence:", data_cleaning(sentence))
