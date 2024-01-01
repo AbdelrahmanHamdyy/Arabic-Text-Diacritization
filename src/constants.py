@@ -32,6 +32,7 @@ VALID_ARABIC_CHARS_WITHOUT_PUNCTUATION = basic_arabic_letters + MAIN_DIACRITICS 
 WHITESPACES_PATTERN = re.compile("\s+")
     
 # Diacritic to Id
+diacritic2id = None
 with open("./utils/diacritic2id.pickle", 'rb') as file:
     diacritic2id = pickle.load(file)
     
