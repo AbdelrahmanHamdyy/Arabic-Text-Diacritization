@@ -2,7 +2,7 @@ import csv
 import torch
 import pandas as pd
 from preprocessing import *
-from train import RNN
+from models import *
 from constants import *
     
 def read_test_set(path):

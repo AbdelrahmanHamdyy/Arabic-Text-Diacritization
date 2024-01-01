@@ -41,7 +41,10 @@ VOCAB_SIZE = len(basic_arabic_letters) + 1
 LABELS_SIZE = len(DIACRITICS)
 
 # Paths
-RNN_PATH = "./models/rnn.pth"
+RNN_PATH = "../trained_models/rnn.pth"
+CNN_PATH = "../trained_models/cnn.pth"
+LSTM_PATH = "../trained_models/lstm.pth"
+CRF_PATH = "../trained_models/crf.pth"
 
 TRAIN_PATH = "../dataset/train.txt"
 VAL_PATH = "../dataset/val.txt"

@@ -6,6 +6,7 @@ import torch.nn as nn
 from torch.nn.utils.rnn import pad_sequence
 from preprocessing import *
 from constants import *
+from models import *
 
 # Test GPU
 device = None
@@ -19,29 +20,6 @@ else:
     device_type = "cpu"
     device = torch.device(device_type)
     print("No GPU available, using the CPU instead.")
-    
-# Model
-class RNN(nn.Module):
-    def __init__(self, vocab_size=VOCAB_SIZE, n_classes=LABELS_SIZE, embedding_dim=EMBEDDING_DIM, hidden_size=HIDDEN_SIZE, num_layers=NUM_LAYERS):
-        super(RNN, self).__init__()
-
-        # Embedding layer
-        self.embedding = nn.Embedding(vocab_size, embedding_dim)
-
-        # Bidirectional LSTM layer
-        self.lstm = nn.LSTM(embedding_dim, hidden_size, num_layers=num_layers, batch_first=True, bidirectional=True)
-        
-        # Linear layer
-        self.linear = nn.Linear(hidden_size * 2, n_classes)
-
-    def forward(self, sentences):
-        embeddings = self.embedding(sentences)
-        
-        lstm_out, _ = self.lstm(embeddings)
-        
-        output = self.linear(lstm_out)
-
-        return output
     
 def data_loader(train_inputs, val_inputs, train_labels, val_labels, batch_size=BATCH_SIZE):
     # Create DataLoader for training data
