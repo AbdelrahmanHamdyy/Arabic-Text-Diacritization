@@ -96,9 +96,12 @@ def train(path, model, optimizer, train_dataloader, val_dataloader=None, epochs=
             if val_accuracy > best_accuracy:
                 best_accuracy = val_accuracy
                 torch.save(model.state_dict(), path)
+            
+            # Track the best loss
             if val_loss < best_loss:
                 best_loss = val_loss
                 torch.save(model.state_dict(), LOSS_PATH)
+                
             # Print performance over the entire training data
             time_elapsed = time.time() - t0_epoch
             print(f"{epoch_i + 1:^7} | {avg_train_loss:^12.6f} | {val_loss:^10.6f} | {val_accuracy:^9.2f} | {time_elapsed:^9.2f}")
@@ -169,7 +172,7 @@ def prepare_data(path):
     x, y = [], []
     x_padded, y_padded = [], []
 
-    for sentences in corpus[:10]:
+    for sentences in corpus:
         char_list, diacritics_list = separate_words_and_diacritics(sentences.strip())
 
         for i in range(len(char_list)):
