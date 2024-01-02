@@ -12,7 +12,7 @@ class RNN(nn.Module):
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
 
         # Bidirectional LSTM layer
-        self.lstm = nn.LSTM(embedding_dim, hidden_size, num_layers=num_layers, batch_first=True, bidirectional=True)
+        self.lstm = nn.LSTM(embedding_dim, hidden_size, num_layers=num_layers, batch_first=True, bidirectional=True,dropout=0.4)
         
         # Linear layer
         self.linear = nn.Linear(hidden_size * 2, n_classes)
@@ -37,7 +37,7 @@ class CNN(nn.Module):
         self.conv1d = nn.Conv1d(embedding_dim, 256, kernel_size=3, padding=1)
         
         # LSTM Layer
-        self.lstm = nn.LSTM(256, hidden_size, num_layers=num_layers, batch_first=True, bidirectional=True)
+        self.lstm = nn.LSTM(256, hidden_size, num_layers=num_layers, batch_first=True, bidirectional=True,dropout=0.4)
         
         # Linear Layer
         self.linear = nn.Linear(2 * hidden_size, num_classes)
@@ -57,7 +57,7 @@ class CNN(nn.Module):
 
         return output
     
-class CRF(nn.Module):
+class LSTM_CRF(nn.Module):
     def _init_(
         self,
         vocab_size=VOCAB_SIZE,
@@ -66,7 +66,7 @@ class CRF(nn.Module):
         hidden_size=HIDDEN_SIZE,
         num_layers=NUM_LAYERS,
     ):
-        super(CRF, self)._init_()
+        super(LSTM_CRF, self)._init_()
 
         # Embedding layer
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
@@ -78,6 +78,7 @@ class CRF(nn.Module):
             num_layers=num_layers,
             batch_first=True,
             bidirectional=True,
+            dropout=0.4
         )
 
         # Linear layer

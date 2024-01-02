@@ -42,6 +42,7 @@ def train(path, model, optimizer, train_dataloader, val_dataloader=None, epochs=
 
     # Tracking best validation accuracy
     best_accuracy = 0
+    best_loss = float('inf')
 
     # Start training loop
     print("Start training...\n")
@@ -95,7 +96,9 @@ def train(path, model, optimizer, train_dataloader, val_dataloader=None, epochs=
             if val_accuracy > best_accuracy:
                 best_accuracy = val_accuracy
                 torch.save(model.state_dict(), path)
-
+            if val_loss < best_loss:
+                best_loss = val_loss
+                torch.save(model.state_dict(), LOSS_PATH)
             # Print performance over the entire training data
             time_elapsed = time.time() - t0_epoch
             print(f"{epoch_i + 1:^7} | {avg_train_loss:^12.6f} | {val_loss:^10.6f} | {val_accuracy:^9.2f} | {time_elapsed:^9.2f}")
@@ -166,12 +169,12 @@ def prepare_data(path):
     x, y = [], []
     x_padded, y_padded = [], []
 
-    for sentence in corpus:
-        char_list, diacritics_list = separate_words_and_diacritics(sentence.strip())
+    for sentences in corpus[:10]:
+        char_list, diacritics_list = separate_words_and_diacritics(sentences.strip())
 
         for i in range(len(char_list)):
             x.append(char_list[i])
-            x.append(diacritics_list[i])
+            y.append(diacritics_list[i])
 
     x_tensor = [torch.tensor([char_to_index[char] for char in sentence]) for sentence in x]
     x_padded = pad_sequence(x_tensor, batch_first=True)

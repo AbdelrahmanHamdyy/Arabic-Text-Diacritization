@@ -2,7 +2,7 @@ import re
 import pickle
 
 # Window sizes
-SENTENCE_WINDOW = 600
+SENTENCE_WINDOW = 400
 WINDOW_SIZE_BEFORE = 2
 WINDOW_SIZE_AFTER = 3
 
@@ -15,10 +15,10 @@ with open("./utils/diacritics.pickle","rb") as file:
     MAIN_DIACRITICS = list(pickle.load(file))
 
 # Model parameters
-EMBEDDING_DIM = 300
+EMBEDDING_DIM = 200
 HIDDEN_SIZE = 512
-NUM_LAYERS = 3
-NUM_EPOCHS = 30
+NUM_LAYERS = 5
+NUM_EPOCHS = 10
 LEARNING_RATE = 0.001
 BATCH_SIZE = 64
 PAD = 15
@@ -45,6 +45,7 @@ RNN_PATH = "../trained_models/rnn.pth"
 CNN_PATH = "../trained_models/cnn.pth"
 LSTM_PATH = "../trained_models/lstm.pth"
 CRF_PATH = "../trained_models/crf.pth"
+LOSS_PATH = "../trained_models/loss.pth"
 
 TRAIN_PATH = "../dataset/train.txt"
 VAL_PATH = "../dataset/val.txt"
