@@ -97,6 +97,30 @@ def calculate_accuracy():
 
     print(f"Accuracy: {accuracy * 100:.2f}%")
     
+def test_one_line():
+    model = load_model()
+    test_sentence = "بسم الله الرحمن الرحيم"
+    X_test = separate_words_to_char(test_sentence.strip())
+        
+    sentence = torch.tensor([char_to_index[char] for char in X_test])
+    prediction = None
+
+    with torch.no_grad():
+        prediction = model(sentence)
+
+    diacritics = [index_to_diacritic[index.item()] for index in prediction.argmax(dim=1)]
+    
+    output, count = "", 0
+    
+    for char in test_sentence:
+        output += char 
+        if char in basic_arabic_letters and diacritics[count] != " ":
+            output += diacritics[count]
+            count += 1
+    
+    print(test_sentence)
+    print(output)
+    
 if __name__ == '__main__':
     prepareTesting(TEST_PATH)
     model = load_model()
