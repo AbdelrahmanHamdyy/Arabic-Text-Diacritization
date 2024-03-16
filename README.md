@@ -8,7 +8,7 @@
    <img align="center" height="350px"  src="https://cdn.dribbble.com/users/1092177/screenshots/2649569/dribbble.gif" alt="logo">
    <br>
 
-   ### ”Hello, Let us help you easily recognize hand gestures 🖐️“
+   ### ”وَعَلَّمَكَ مَا لَمْ تَكُنْ تَعْلَمُ“
 </div>
 
 <p align="center"> 
@@ -69,7 +69,7 @@ pronunciation and meaning. Here is an example of Arabic text diacritization:</li
 
 ## 🚀 How To Run
 
-- First install the  <a href="https://github.com/AbdelrahmanHamdyy/Hand-Gesture-Recognition/blob/main/requirements.txt">needed packages</a>.</li> 
+- First install the  <a href="https://github.com/AbdelrahmanHamdyy/Arabic-Text-Diacritization/blob/main/requirements.txt">needed packages</a>.</li> 
 
 ```sh
 pip install -r requirements.txt
@@ -180,7 +180,7 @@ output csv file.</li>
 
 ### <img align= center height=60px src="https://media0.giphy.com/media/YqJxBFX7cOPQSFO6gv/200w.webp?cid=ecf05e47q2pctv46mon3iqculvvgg8k8bruy7d5or1kf1jh8&ep=v1_stickers_search&rid=200w.webp&ct=s">Model Selection
 
-Fitting training data and labels into an <strong>5-Layer Bidirectional LSTM</strong> which gives us 97% accuracy
+Fitting training data and labels into an <strong>5-Layer Bidirectional LSTM</strong> which gives us 97% accuracy.
 
 
 
