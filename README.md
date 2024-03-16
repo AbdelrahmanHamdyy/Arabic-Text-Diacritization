@@ -19,7 +19,6 @@
 
 - <a href ="#about"> 📙 Overview</a>
 - <a href ="#started"> 💻 Get Started</a>
-- <a href ="#pipeline"> ⛓️ Project Pipeline</a>
 - <a href ="#modules">🤖  Modules</a>
     - <a href="#preprocessing">🔁 Preprocessing Module</a>
     - <a href="#feature">💪 Feature Extraction Module</a>
@@ -112,19 +111,7 @@ python evaluation.py
 ```
 
 - Features are saved in `../trained_models`
-<hr style="background-color: #4b4c60"></hr>
 
-<a id = "Pipeline"></a>
-
-## 🧱 Project Pipeline
-<ol>
-<li>📷 Read images</li>
-<li>🔁 Preprocessing</li>
-<li>💪 Get features</li>
-<li>🪓 Split Training and Test Data</li>
-<li>✅ Calculate accuracy</li>
-
-</ol>
 
 <hr style="background-color: #4b4c60"></hr>
 <a id = "Modules"></a>
@@ -132,7 +119,7 @@ python evaluation.py
 ## 🤖 Modules
 <a id = "Preprocessing"></a>
 
-### <img align= center width=50px src="https://media0.giphy.com/media/321AaGDATXT8dq4MDC/giphy.gif?cid=ecf05e47r2eazdcsf8tqp6diz0z2o24gcho6yy4kj4lu6ctb&ep=v1_stickers_search&rid=giphy.gif&ct=s">Preprocessing Module
+### <img align= center width=50px src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzVheHZucHh0YnVlMHdyNHFjMTJ3NnAxNnlyYW0wNW40Ynh0a2UycCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/l0u897CIX2Z5Qpnxcr/giphy.gif">Preprocessing Module
 <ol>
 <li> <strong>Data Cleaning:</strong> First step is always to clean the sentences we read from the 
 corpus by defining the basic Arabic letters with all different formats of them 
@@ -157,26 +144,38 @@ previous words we want to get and the size of the next words.</li>
 
 ### <img align= center height=60px src="https://media0.giphy.com/media/fw9KH5k7W2BVb78Wkq/200w.webp?cid=ecf05e472gayvziprwm50vr429mjzkk6lic31u4tegu821k7&ep=v1_stickers_search&rid=200w.webp&ct=s">Feature Extraction Module
 
-<strong>Trainable Embeddings</strong> Here we use the Embedding layer provided by torch.nn 
-which gives us trainable embeddings on the character level. 
+
 <ol>
-<li>This layer in a neural network is responsible for transforming discrete 
+<li><strong>Trainable Embeddings(which we used): </strong> Here we use the Embedding layer provided by torch.nn. which gives us trainable embeddings on the character level. This layer in a neural network is responsible for transforming discrete 
 input elements, in our case character indices, into continuous vector 
 representations where each unique input element is associated with a 
 learnable vector and these vectors capture semantic relationships 
 between the elements. </li>
-<li>
- We give it our vocabulary size and the desired embedding dimension we 
-want. During training, the parameters of this embedding layer 
-(embedding vectors) will be learned and updated based on the 
-optimization process</li>
-<li>
-The model will adjust the embeddings to capture useful patterns or 
-representations for the task at hand. The output of this layer would be 
-the learned dense representations (embeddings) for each character in our
-vocabulary.
-</li>
+<li><strong> <a href="https://github.com/bakrianoo/aravec">AraVec</a> CBOW Word Embeddings: </strong> AraVec is an open-source project that offers pre-trained distributed word 
+representations, specifically designed for the Arabic natural language 
+processing (NLP) research community. </li>
+<li><strong> <a href="https://github.com/aub-mind/arabert">AraBERT</a>: </strong> Pre-trained Transformers for Arabic Language Understanding and Generation (Arabic BERT, Arabic GPT2, Arabic ELECTRA)</li>
 </ol>
+The next approaches weren’t possible on pure Arabic letters because these 
+libraries tokenize on English statements. They expect the data to be joined 
+sentences in English form so we had to find a way to deal with this issue. After a 
+bit of research, we found a method that basically maps Arabic letters and 
+diacritics to English letters and symbols by using <a href="https://en.wikipedia.org/wiki/Buckwalter_transliteration">Buckwalter</a> transliterate and 
+untransiliterate functions, we were able to switch the language for the feature 
+extraction by ourselves part.
+<ul>
+<li><strong>Bag Of Words: </strong> by using the CountVectorizer method which is trained on the 
+whole corpus. The vectorizer gets the feature names after fitting the data and 
+then we save them to a csv file which represents the bag of words model. We 
+can index any word and get its corresponding vector which describes its count in 
+the corpus and no info about the position of this word.</li>
+<li><strong>TF-IDF: </strong> The TfIdfVectorizer initializes our model and we choose to turn off 
+lowercasing the words. After transforming and fitting the model on the 
+input data, we extract the feature names out and this will be out words 
+set that we’ll place them in column headings of each column in the 
+output csv file.</li>
+</ul>
+
 <a id = "Selection"></a>
 
 ### <img align= center height=60px src="https://media0.giphy.com/media/YqJxBFX7cOPQSFO6gv/200w.webp?cid=ecf05e47q2pctv46mon3iqculvvgg8k8bruy7d5or1kf1jh8&ep=v1_stickers_search&rid=200w.webp&ct=s">Model Selection
