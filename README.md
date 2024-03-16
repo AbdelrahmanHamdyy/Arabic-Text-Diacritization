@@ -1,14 +1,14 @@
 <div align= >
 
-#  <img align="center" height="75px"  src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOTJ6YXI3M2l4OW8xMTd1NmJlM2E2cXl6Mmczdnc5cnE0YnI4OWNyaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/iJJNCuhOVeDXxoKiAU/giphy.gif"> Arabic Text Diacritization
-
+# <img align="center" height="75px"  src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOTJ6YXI3M2l4OW8xMTd1NmJlM2E2cXl6Mmczdnc5cnE0YnI4OWNyaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/iJJNCuhOVeDXxoKiAU/giphy.gif"> Arabic Text Diacritization
 
 </div>
 <div align="center">
    <img align="center" height="350px"  src="https://cdn.dribbble.com/users/1092177/screenshots/2649569/dribbble.gif" alt="logo">
    <br>
 
-   ### ”مِنْ لَمْ يُحْتَمَلْ ذُلُّ اَلتَّعَلُّمِ سَاعَةً ، بَقِيَ فِي ذُلِّ اَلْجَهْلِ أَبَدًا .“
+### ”مِنْ لَمْ يُحْتَمَلْ ذُلُّ اَلتَّعَلُّمِ سَاعَةً ، بَقِيَ فِي ذُلِّ اَلْجَهْلِ أَبَدًا .“
+
 </div>
 
 <p align="center"> 
@@ -19,10 +19,10 @@
 
 - <a href ="#about"> 📙 Overview</a>
 - <a href ="#started"> 💻 Get Started</a>
-- <a href ="#modules">🤖  Modules</a>
-    - <a href="#preprocessing">🔁 Preprocessing Module</a>
-    - <a href="#feature">💪 Feature Extraction Module</a>
-    - <a href="#selection">✅ Model Selection</a>
+- <a href ="#modules">🤖 Modules</a>
+  - <a href="#preprocessing">🔁 Preprocessing Module</a>
+  - <a href="#feature">💪 Feature Extraction Module</a>
+  - <a href="#selection">✅ Model Selection</a>
 - <a href ="#contributors"> ✨ Contributors</a>
 - <a href ="#license"> 🔒 License</a>
 <hr style="background-color: #4b4c60"></hr>
@@ -69,7 +69,7 @@ pronunciation and meaning. Here is an example of Arabic text diacritization:</li
 
 ## 🚀 How To Run
 
-- First install the  <a href="https://github.com/AbdelrahmanHamdyy/Arabic-Text-Diacritization/blob/main/requirements.txt">needed packages</a>.</li> 
+- First install the <a href="https://github.com/AbdelrahmanHamdyy/Arabic-Text-Diacritization/blob/main/requirements.txt">needed packages</a>.</li>
 
 ```sh
 pip install -r requirements.txt
@@ -112,14 +112,15 @@ python evaluation.py
 
 - Features are saved in `../trained_models`
 
-
 <hr style="background-color: #4b4c60"></hr>
 <a id = "Modules"></a>
 
 ## 🤖 Modules
+
 <a id = "Preprocessing"></a>
 
 ### <img align= center width=50px src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbzVheHZucHh0YnVlMHdyNHFjMTJ3NnAxNnlyYW0wNW40Ynh0a2UycCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/l0u897CIX2Z5Qpnxcr/giphy.gif">Preprocessing Module
+
 <ol>
 <li> <strong>Data Cleaning:</strong> First step is always to clean the sentences we read from the 
 corpus by defining the basic Arabic letters with all different formats of them 
@@ -135,18 +136,17 @@ this. If the sentence length is less than the window size then we pad the rest o
 the empty size to ensure they’re all almost equal.</li>
 <li><strong>Encoding:</strong> The last step is to encode each character and diacritic to a specific index which 
 is defined in our character to index and diacritic to index dictionaries. Basically 
-transforming letters and diacritics into a numerical form to be input to our.</li>
+transforming letters and diacritics into a numerical form to be input to our model.</li>
 <li><strong>Failed Trails:</strong> We Tried not to give it a full sentence but a small sliding window 
-and this sliding window in flexible in size as we can determine the size of 
+and this sliding window is flexible in size as we can determine the size of 
 previous words we want to get and the size of the next words.</li>
 </ol>
 <a id = "Feature"></a>
 
 ### <img align= center height=60px src="https://media0.giphy.com/media/fw9KH5k7W2BVb78Wkq/200w.webp?cid=ecf05e472gayvziprwm50vr429mjzkk6lic31u4tegu821k7&ep=v1_stickers_search&rid=200w.webp&ct=s">Feature Extraction Module
 
-
 <ol>
-<li><strong>Trainable Embeddings(which we used): </strong> Here we use the Embedding layer provided by torch.nn. which gives us trainable embeddings on the character level. This layer in a neural network is responsible for transforming discrete 
+<li><strong>Trainable Embeddings (Used): </strong> Here we use the Embedding layer provided by torch.nn. which gives us trainable embeddings on the character level. This layer in a neural network is responsible for transforming discrete 
 input elements, in our case character indices, into continuous vector 
 representations where each unique input element is associated with a 
 learnable vector and these vectors capture semantic relationships 
@@ -180,15 +180,13 @@ output csv file.</li>
 
 ### <img align= center height=60px src="https://media0.giphy.com/media/YqJxBFX7cOPQSFO6gv/200w.webp?cid=ecf05e47q2pctv46mon3iqculvvgg8k8bruy7d5or1kf1jh8&ep=v1_stickers_search&rid=200w.webp&ct=s">Model Selection
 
-Fitting training data and labels into an <strong>5-Layer Bidirectional LSTM</strong> which gives us 97% accuracy.
-
-
+Fitting training data and labels into a <strong>5-Layer Bidirectional LSTM</strong> which gave us 97% accuracy.
 
 <hr style="background-color: #4b4c60"></hr>
 
 <a id ="Contributors"></a>
 
-## 👑 Contributors 
+## 👑 Contributors
 
 <table align="center" >
   <tr>
@@ -199,8 +197,6 @@ Fitting training data and labels into an <strong>5-Layer Bidirectional LSTM</str
      <td align="center"><a href="https://github.com/EslamAsHhraf"><img src="https://avatars.githubusercontent.com/u/71986226?v=4" width="150;" alt=""/><br /><sub><b>Eslam Ashraf</b></sub></a><br /></td>
   </tr>
 </table>
-
-
 
 <a id ="License"></a>
 
