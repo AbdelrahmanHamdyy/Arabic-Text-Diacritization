@@ -8,7 +8,7 @@
    <img align="center" height="350px"  src="https://cdn.dribbble.com/users/1092177/screenshots/2649569/dribbble.gif" alt="logo">
    <br>
 
-   ### ”وَعَلَّمَكَ مَا لَمْ تَكُنْ تَعْلَمُ“
+   ### ”مِنْ لَمْ يُحْتَمَلْ ذُلُّ اَلتَّعَلُّمِ سَاعَةً ، بَقِيَ فِي ذُلِّ اَلْجَهْلِ أَبَدًا .“
 </div>
 
 <p align="center"> 
